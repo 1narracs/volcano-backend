@@ -32,7 +32,7 @@ const authorize = (req, res, next) => {
     const decoded = jwt.verify(token, secretKey);
 
     if (decoded.exp < Date.now()) {
-      res.status(401).json({ error: true, message: "JWT token has expired" });
+      throw new StatusError("JWT token has expired", 401);
     }
 
     req.authenticated = true;
@@ -40,7 +40,15 @@ const authorize = (req, res, next) => {
     // Permit user to advance to route
     next();
   } catch (err) {
-    res.status(401).json({ error: true, message: "Invalid JWT token" });
+    try {
+      res.status(err.code).json({
+        error: true,
+        message: err.message,
+      });
+    } catch {
+      res.status(401).json({ error: true, message: "Invalid JWT token" });
+      return;
+    }
   }
 };
 
