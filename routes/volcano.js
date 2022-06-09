@@ -2,8 +2,6 @@ const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 
-let authorized = false;
-
 // Throws custom errors with status codes
 function StatusError(message, code) {
   const error = new Error(message);
@@ -37,7 +35,7 @@ const authorize = (req, res, next) => {
       res.status(401).json({ error: true, message: "JWT token has expired" });
     }
 
-    authorized = true;
+    req.authenticated = true;
 
     // Permit user to advance to route
     next();
@@ -64,7 +62,7 @@ router.get("/:id", authorize, function (req, res) {
           404
         );
       }
-      if (!authorized) {
+      if (!req.authenticated || req.authenticated === undefined) {
         res.status(200).json({
           id: rows[0].id,
           name: rows[0].name,
@@ -77,7 +75,7 @@ router.get("/:id", authorize, function (req, res) {
           latitude: rows[0].latitude,
           longitude: rows[0].longitude,
         });
-      } else if (authorized) {
+      } else if (req.authenticated) {
         res.status(200).json({
           id: rows[0].id,
           name: rows[0].name,
@@ -96,9 +94,7 @@ router.get("/:id", authorize, function (req, res) {
         });
       }
     })
-    .then(() => (authorized = false))
     .catch((err) => {
-      authorized = false;
       try {
         res.status(err.code).json({
           error: true,
