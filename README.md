@@ -1,6 +1,4 @@
-# volcano-backend
-
-## Installation
+# Installation
 
 Use npm to install all the required modules.
 
@@ -10,7 +8,7 @@ npm install
 
 From here, the application should be properly configured; however, if not the following steps should assist in getting the app to run.
 
-## Usage
+# Usage
 
 To run the application, simply
 
@@ -18,7 +16,9 @@ To run the application, simply
 npm start
 ```
 
-## Additional Configuration
+# Additional Configuration
+
+## Certificates
 
 Create self-signed certificates as normal.
 
@@ -53,6 +53,8 @@ app.set('port', port);
 var server = https.createServer(credentials,app);
 ```
 
+## Database setup
+
 Ensuring you have MySQL installed, navigate to the directory containing the VolcanoesDump.sql file run the following commands.
 
 ```bash
@@ -79,6 +81,8 @@ module.exports = {
   timezone: "+10:00",
 };
 ```
+
+## .env setup
 
 Ensure that you properly set up the .env file, with the constants PORT and SECRET_KEY. PORT should be 443 by default as we are serving https.
 
