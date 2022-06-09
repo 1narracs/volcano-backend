@@ -1,13 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const jwt = require("jsonwebtoken");
-
-// Throws custom errors with status codes
-function StatusError(message, code) {
-  const error = new Error(message);
-  error.code = code;
-  return error;
-}
+const serrors = require("../modules/statuserror.js");
 
 router.get("/", function (req, res) {
   let volcanoes = [];
@@ -46,7 +39,7 @@ router.get("/", function (req, res) {
             .where("country", "=", country)
             .andWhere(`population_${populatedWithin}`, ">", "0");
         } else {
-          throw new StatusError(
+          throw new serrors.statusError(
             "Invalid value for populatedWithin. Only: 5km,10km,30km,100km are permitted.",
             400
           );
