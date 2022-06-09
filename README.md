@@ -8,7 +8,7 @@ Use npm to install all the required modules.
 npm install
 ```
 
-From here, the application should be properly configured; however, if not the follow steps should assist in getting the app to run.
+From here, the application should be properly configured; however, if not the following steps should assist in getting the app to run.
 
 ## Usage
 
