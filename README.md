@@ -20,6 +20,8 @@ npm start
 
 ## Additional Configuration
 
+Create self-signed certificates as normal.
+
 In ./bin/wwww, replace line 9 - 22 with the following code
 
 ```javascript
