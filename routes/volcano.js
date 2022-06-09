@@ -1,76 +1,27 @@
 const express = require("express");
 const router = express.Router();
-const jwt = require("jsonwebtoken");
+const serrors = require("../modules/statuserror.js");
+const auth = require("../modules/authorize.js");
 
-// Throws custom errors with status codes
-function StatusError(message, code) {
-  const error = new Error(message);
-  error.code = code;
-  return error;
-}
-
-const authorize = (req, res, next) => {
-  const secretKey = process.env.SECRET_KEY;
-  const authorization = req.headers.authorization;
-  let token = null;
-
-  if (authorization) {
-    if (authorization.split(" ").length == 2) {
-      token = authorization.split(" ")[1];
-    } else {
-      res
-        .status(401)
-        .json({ error: true, message: "Authorization header is malformed" });
-    }
-  } else {
-    next();
-    return;
-  }
-
-  // Verify JWT and check expiration date
-  try {
-    const decoded = jwt.verify(token, secretKey);
-
-    if (decoded.exp < Date.now()) {
-      throw new StatusError("JWT token has expired", 401);
-    }
-
-    req.authenticated = true;
-
-    // Permit user to advance to route
-    next();
-  } catch (err) {
-    try {
-      res.status(err.code).json({
-        error: true,
-        message: err.message,
-      });
-    } catch {
-      res.status(401).json({ error: true, message: "Invalid JWT token" });
-      return;
-    }
-  }
-};
-
-router.get("/:id", authorize, function (req, res) {
+router.get("/:id", auth.authorize, function (req, res) {
   req.db
     .from("data")
     .select("*")
     .where("id", "=", req.params.id)
     .then((rows) => {
       if (!/^[0-9]+$/.test(req.params.id)) {
-        throw new StatusError(
+        throw new serrors.statusError(
           "Invalid query parameters. Query parameters are not permitted.",
           400
         );
       }
       if (rows.length == 0) {
-        throw new StatusError(
+        throw new serrors.statusError(
           `Volcano with ID: ${req.params.id} not found.`,
           404
         );
       }
-      if (!req.authenticated || req.authenticated === undefined) {
+      if (!req.authenticated || req.authenticated == undefined) {
         res.status(200).json({
           id: rows[0].id,
           name: rows[0].name,
