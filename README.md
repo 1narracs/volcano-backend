@@ -20,6 +20,37 @@ npm start
 
 ## Additional Configuration
 
+In ./bin/wwww, replace line 9 - 22 with the following code
+
+```javascript
+var https = require('https');
+
+/**
+ * Credentials, certificates
+ */
+
+const fs = require('fs');
+const privateKey = fs.readFileSync('/etc/ssl/private/node-selfsigned.key', 'utf8');
+const certificate = fs.readFileSync('/etc/ssl/certs/node-selfsigned.crt', 'utf8');
+const credentials = {
+  key: privateKey,
+  cert: certificate
+};
+
+/**
+ * Get port from environment and store in Express.
+ */
+
+var port = normalizePort(process.env.PORT || '443');
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+
+var server = https.createServer(credentials,app);
+```
+
 Ensuring you have MySQL installed, navigate to the directory containing the VolcanoesDump.sql file run the following commands.
 
 ```bash
